@@ -1,0 +1,132 @@
+<?php $xero = $admin['xero']; ?>
+<div class="d-flex justify-content-between align-items-center py-3 mb-4">
+    <h4 class="mb-0">
+        <span class="text-muted fw-light">Services /</span> Xero
+    </h4>
+    <button type="submit" form="settings-form" class="btn btn-primary">
+        <i class="bx bx-save me-1"></i> Save Settings
+    </button>
+</div>
+
+<?php if ($admin['flash'] ?? null): ?>
+    <div class="alert alert-<?= \htmlspecialchars($admin['flash']['type']) ?> alert-dismissible fade show" role="alert">
+        <?= \htmlspecialchars($admin['flash']['text']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<?php endif; ?>
+
+<?php if ($xero['error']): ?>
+    <div class="alert alert-danger"><i class="bx bx-error-circle me-1"></i> <?= \htmlspecialchars($xero['error']) ?></div>
+<?php endif; ?>
+
+<?php if ($xero['justConnected']): ?>
+    <div class="alert alert-success"><i class="bx bx-check-circle me-1"></i> Connected to Xero.</div>
+<?php endif; ?>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="alert alert-warning">
+            <i class="bx bx-error-circle me-1"></i>
+            Pushing an order creates a real <strong>AUTHORISED</strong> invoice in Xero. Pushes are refused until
+            <em>Allowed organisation</em> below exactly matches the connected organisation.
+        </div>
+
+        <form method="POST" action="<?= $admin['basePath'] ?>settings/xero/" id="settings-form">
+            <input type="hidden" name="token" value="<?= $template['formToken'] ?? '' ?>">
+            <div class="card mb-4">
+                <div class="card-header"><h5 class="mb-0"><i class="bx bx-receipt me-2"></i>Xero app</h5></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="client_id" class="form-label fw-semibold">Client ID</label>
+                        <input type="text" class="form-control" id="client_id" name="client_id"
+                            value="<?= \htmlspecialchars($xero['clientId']) ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="client_secret" class="form-label fw-semibold">Client Secret</label>
+                        <input type="password" class="form-control" id="client_secret" name="client_secret" autocomplete="new-password"
+                            <?= $xero['hasSecret'] ? 'placeholder="Leave blank to keep current"' : '' ?>>
+                        <div class="form-text">Stored server-side and never shown again.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="redirect_uri" class="form-label fw-semibold">Redirect URI</label>
+                        <input type="text" class="form-control" id="redirect_uri" name="redirect_uri"
+                            value="<?= \htmlspecialchars($xero['redirectUri']) ?>">
+                        <div class="form-text">Must match an entry under "OAuth 2.0 redirect URIs" on the Xero app exactly (protocol, trailing slash, everything).</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="sales_account_code" class="form-label fw-semibold">Sales account code</label>
+                            <input type="text" class="form-control" id="sales_account_code" name="sales_account_code"
+                                value="<?= \htmlspecialchars($xero['salesAccountCode']) ?>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="allowed_tenant_name" class="form-label fw-semibold">Allowed organisation</label>
+                            <input type="text" class="form-control" id="allowed_tenant_name" name="allowed_tenant_name"
+                                value="<?= \htmlspecialchars($xero['allowedTenantName']) ?>">
+                            <div class="form-text">Exact name of the Xero organisation pushes may go to.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="card mb-4">
+            <div class="card-header"><h5 class="mb-0">Connection</h5></div>
+            <div class="card-body">
+                <?php if (!$xero['clientConfigured']): ?>
+                    <div class="alert alert-warning mb-0">Save a client ID and secret first.</div>
+                <?php elseif ($xero['connected']): ?>
+                    <p class="mb-1">
+                        <span class="badge bg-success">Connected</span>
+                        to <strong><?= \htmlspecialchars($xero['tenantName'] ?? '') ?></strong>
+                    </p>
+                    <p class="text-muted small mb-4">Connected since <?= \htmlspecialchars($xero['connectedAt'] ?? '') ?></p>
+                    <button type="button" class="btn btn-outline-primary" onclick="testConnection()">
+                        <i class="bx bx-refresh me-1"></i> Test Connection
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" onclick="disconnectXero()">
+                        <i class="bx bx-unlink me-1"></i> Disconnect
+                    </button>
+                    <div id="xeroActionResult" class="mt-3"></div>
+                <?php else: ?>
+                    <p class="text-muted mb-3">Not connected. Orders can't be pushed to Xero until you connect an organisation.</p>
+                    <a href="<?= $admin['basePath'] ?>settings/xero/connect/" class="btn btn-primary">
+                        <i class="bx bx-link me-1"></i> Connect to Xero
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.csrfToken = <?= \json_encode($template['formToken'] ?? '') ?>;
+
+async function postXeroAction(action) {
+    const response = await fetch('<?= $admin['basePath'] ?>settings/xero/action/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, csrf_token: window.csrfToken }),
+    });
+    return response.json();
+}
+
+async function testConnection() {
+    const resultEl = document.getElementById('xeroActionResult');
+    resultEl.textContent = 'Testing...';
+
+    const result = await postXeroAction('test_connection');
+    resultEl.innerHTML = '';
+    const alert = document.createElement('div');
+    alert.className = 'alert mb-0 alert-' + (result.success ? 'success' : 'danger');
+    alert.textContent = result.success ? 'Connected to "' + (result.organisation || '') + '".' : (result.error || 'Connection test failed');
+    resultEl.appendChild(alert);
+}
+
+async function disconnectXero() {
+    // Not confirm(): native dialogs block browser automation; reconnecting is one click.
+    const result = await postXeroAction('disconnect');
+    if (result.success) window.location.reload();
+    else document.getElementById('xeroActionResult').textContent = result.error || 'Failed to disconnect';
+}
+</script>
