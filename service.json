@@ -1,7 +1,7 @@
 {
     "id": "xero",
     "name": "Xero",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Connects the shop to Xero (OAuth2) and adds a 'Push to Xero' button on paid orders that creates an AUTHORISED sales invoice. Locked to one named Xero organisation",
     "category": "business",
     "author": {
@@ -12,7 +12,8 @@
     "requires": {
         "osmium": ">=1.0.0",
         "php": ">=8.1",
-        "services": []
+        "services": [],
+        "shop": true
     },
 
     "autoload": [
