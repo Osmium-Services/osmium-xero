@@ -1,7 +1,7 @@
 {
     "id": "xero",
     "name": "Xero",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "description": "Connects the shop to Xero (OAuth2) and adds a 'Push to Xero' button on paid orders that creates an AUTHORISED sales invoice. Locked to one named Xero organisation",
     "category": "business",
     "author": {
@@ -23,6 +23,9 @@
     "migrations": "migrations",
 
     "hooks": {
+        "mcp.tools": [
+            "Osmium\\Services\\Xero\\Models\\XeroMcp::tools"
+        ],
         "order.panels": [
             "Osmium\\Services\\Xero\\Models\\XeroOrderSync::orderPanel"
         ],

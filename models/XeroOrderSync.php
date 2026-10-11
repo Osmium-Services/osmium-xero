@@ -13,7 +13,7 @@ namespace Osmium\Services\Xero\Models;
 class XeroOrderSync
 {
     private const ACTION = 'push_to_xero';
-    private const PUSHABLE_STATUSES = ['paid', 'dispatched', 'refunded'];
+    public const PUSHABLE_STATUSES = ['paid', 'dispatched', 'refunded'];
 
     /**
      * order.panels handler.
