@@ -1,11 +1,11 @@
 {
     "id": "xero",
     "name": "Xero",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "description": "Connects the shop to Xero (OAuth2) and adds a 'Push to Xero' button on paid orders that creates an AUTHORISED sales invoice. Locked to one named Xero organisation",
     "category": "business",
     "website": "https://www.xero.com",
-    "account": {"required": "paid", "note": "Needs a Xero subscription."},
+    "account": {"required": "paid", "note": "Needs a Xero subscription. Xero's free API tier allows up to 5 connections."},
     "author": {
         "name": "Gavin Cox"
     },
