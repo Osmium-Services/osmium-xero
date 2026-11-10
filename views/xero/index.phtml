@@ -24,7 +24,7 @@
 <?php endif; ?>
 
 <div class="row justify-content-center">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <div class="alert alert-warning">
             <i class="bx bx-error-circle me-1"></i>
             Pushing an order creates a real <strong>AUTHORISED</strong> invoice in Xero. Pushes are refused until
@@ -53,18 +53,16 @@
                             value="<?= \htmlspecialchars($xero['redirectUri']) ?>">
                         <div class="form-text">Must match an entry under "OAuth 2.0 redirect URIs" on the Xero app exactly (protocol, trailing slash, everything).</div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="sales_account_code" class="form-label fw-semibold">Sales account code</label>
-                            <input type="text" class="form-control" id="sales_account_code" name="sales_account_code"
-                                value="<?= \htmlspecialchars($xero['salesAccountCode']) ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="allowed_tenant_name" class="form-label fw-semibold">Allowed organisation</label>
-                            <input type="text" class="form-control" id="allowed_tenant_name" name="allowed_tenant_name"
-                                value="<?= \htmlspecialchars($xero['allowedTenantName']) ?>">
-                            <div class="form-text">Exact name of the Xero organisation pushes may go to.</div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="sales_account_code" class="form-label fw-semibold">Sales account code</label>
+                        <input type="text" class="form-control" id="sales_account_code" name="sales_account_code"
+                            value="<?= \htmlspecialchars($xero['salesAccountCode']) ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="allowed_tenant_name" class="form-label fw-semibold">Allowed organisation</label>
+                        <input type="text" class="form-control" id="allowed_tenant_name" name="allowed_tenant_name"
+                            value="<?= \htmlspecialchars($xero['allowedTenantName']) ?>">
+                        <div class="form-text">Exact name of the Xero organisation pushes may go to.</div>
                     </div>
                 </div>
             </div>
