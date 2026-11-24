@@ -1,6 +1,7 @@
 ---
 title: Push paid orders to Xero
 tags: xero, accounting, invoice, orders, bookkeeping, oauth, push
+page: admin/settings/xero
 ---
 
 **Xero** connects your shop to your Xero account. A **Push to Xero** button on each paid order creates a sales invoice there. It creates an authorised invoice.
